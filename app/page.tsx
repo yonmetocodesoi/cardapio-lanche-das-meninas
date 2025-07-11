@@ -6,7 +6,6 @@ import { Cart } from "@/components/cart"
 import { CheckoutModal } from "@/components/checkout-modal"
 import { CartIndicator } from "@/components/cart-indicator"
 import { MenuGrid } from "@/components/menu-grid"
-import { PowerpuffBackground } from "@/components/powerpuff-background"
 
 export interface CartItem {
   id: string
@@ -25,13 +24,11 @@ export default function Home() {
     setCartItems((prev) => {
       const existingItem = prev.find((cartItem) => cartItem.id === item.id)
       if (existingItem) {
-        // Mostrar indicador mesmo quando adicionar mais do mesmo item
         setShowCartIndicator(true)
         return prev.map((cartItem) =>
           cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem,
         )
       }
-      // Mostrar indicador quando adicionar qualquer item
       setShowCartIndicator(true)
       return [...prev, { ...item, quantity: 1 }]
     })
@@ -60,39 +57,33 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Fundo das Meninas Superpoderosas */}
-      <PowerpuffBackground />
+    <div className="min-h-screen bg-white">
+      <Header />
 
-      <div className="relative z-20">
-        <Header />
+      <main className="container mx-auto px-4 py-12">
+        <MenuGrid onAddToCart={addToCart} />
+      </main>
 
-        {/* Cardápio direto sem hero */}
-        <main className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
-          <MenuGrid onAddToCart={addToCart} />
-        </main>
+      <Cart
+        items={cartItems}
+        totalPrice={getTotalPrice()}
+        totalItems={getTotalItems()}
+        deliveryFee={DELIVERY_FEE}
+        totalWithDelivery={getTotalWithDelivery()}
+        onUpdateQuantity={updateQuantity}
+        onCheckout={() => setIsCheckoutOpen(true)}
+      />
 
-        <Cart
-          items={cartItems}
-          totalPrice={getTotalPrice()}
-          totalItems={getTotalItems()}
-          deliveryFee={DELIVERY_FEE}
-          totalWithDelivery={getTotalWithDelivery()}
-          onUpdateQuantity={updateQuantity}
-          onCheckout={() => setIsCheckoutOpen(true)}
-        />
+      <CartIndicator show={showCartIndicator} />
 
-        <CartIndicator show={showCartIndicator} />
-
-        <CheckoutModal
-          isOpen={isCheckoutOpen}
-          onClose={() => setIsCheckoutOpen(false)}
-          cartItems={cartItems}
-          totalPrice={getTotalPrice()}
-          deliveryFee={DELIVERY_FEE}
-          totalWithDelivery={getTotalWithDelivery()}
-        />
-      </div>
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        cartItems={cartItems}
+        totalPrice={getTotalPrice()}
+        deliveryFee={DELIVERY_FEE}
+        totalWithDelivery={getTotalWithDelivery()}
+      />
     </div>
   )
 }
